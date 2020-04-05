@@ -1,0 +1,7 @@
+{
+  "name": "Flexapi mock server",
+  "description": "Mock server for testing flexapi",
+  "keywords": ["mock server", "go", "utility", "flexapi"],
+  "website": "https://github.com/hthl85/flexapi",
+  "repository": "https://github.com/hthl85/flexapi"
+}
