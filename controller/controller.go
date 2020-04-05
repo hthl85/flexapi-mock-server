@@ -19,6 +19,20 @@ func NewController(service *service.Service) *Controller {
 	return &Controller{service: service}
 }
 
+func max(x, y int) int {
+	if x < y {
+		return y
+	}
+	return x
+}
+
+func min(x, y int) int {
+	if x < y {
+		return x
+	}
+	return y
+}
+
 // PingHandler handles ping server action
 func (c *Controller) PingHandler(cx *gin.Context) {
 	cx.JSON(http.StatusOK, gin.H{"message": "Mock server is running."})
@@ -49,8 +63,14 @@ func (c *Controller) GetUsersHandler(cx *gin.Context) {
 		return
 	}
 
+	if users == nil {
+		cx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": "No user available"})
+		return
+	}
+
 	if sLimit != "" {
 		if iLimit, err := strconv.Atoi(sLimit); err == nil {
+			iLimit = min(iLimit, len(users))
 			cx.JSON(http.StatusOK, gin.H{"users": users[:iLimit]})
 			return
 		}
@@ -60,7 +80,8 @@ func (c *Controller) GetUsersHandler(cx *gin.Context) {
 	}
 
 	// Slice the first 4 element for testing purpose
-	cx.JSON(http.StatusOK, gin.H{"users": users[:4]})
+	iLimit := min(4, len(users))
+	cx.JSON(http.StatusOK, gin.H{"users": users[:iLimit]})
 }
 
 // GetUserByIDHandler handles get user by id action
