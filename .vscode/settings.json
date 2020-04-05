@@ -11,7 +11,7 @@
     "flexapi-prod": {
       "protocol": "https",
       "host": "flexapi-mock-server.herokuapp.com",
-      "port": "5000"
+      "port": ""
     }
   }
 }
