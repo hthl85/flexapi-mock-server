@@ -27,9 +27,7 @@ func NewStorage(dbName, bucketName string) *Storage {
 	bucket := []byte(bucketName)
 
 	err = db.Update(func(tx *bolt.Tx) error {
-		_ = db.Update(func(tx *bolt.Tx) error {
-			return tx.DeleteBucket(bucket)
-		})
+		_ = tx.DeleteBucket(bucket)
 
 		_, err := tx.CreateBucketIfNotExists(bucket)
 		if err != nil {
