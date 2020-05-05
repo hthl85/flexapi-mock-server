@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"strconv"
+	"time"
 
 	"github.com/boltdb/bolt"
 	"github.com/hthl85/flexapi-mock-server/model"
@@ -18,20 +19,28 @@ type Storage struct {
 
 // NewStorage inits new storage
 func NewStorage(dbName, bucketName string) *Storage {
-	db, err := bolt.Open(dbName, 0600, nil)
+	db, err := bolt.Open(dbName, 0600, &bolt.Options{Timeout: 1 * time.Second})
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	bucket := []byte(bucketName)
 
-	db.Update(func(tx *bolt.Tx) error {
+	err = db.Update(func(tx *bolt.Tx) error {
+		_ = db.Update(func(tx *bolt.Tx) error {
+			return tx.DeleteBucket(bucket)
+		})
+
 		_, err := tx.CreateBucketIfNotExists(bucket)
 		if err != nil {
 			log.Fatalf("Create bucket failed: %s", err)
 		}
 		return nil
 	})
+
+	if err != nil {
+		log.Fatalf("Create bucket failed: %s", err)
+	}
 
 	return &Storage{BoltDB: db, bucket: bucket}
 }
